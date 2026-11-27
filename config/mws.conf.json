@@ -1,0 +1,100 @@
+{
+  "www": {
+    "origin": "https://mumps.io"
+  },
+  "server": {
+    "name": "mumps.io",
+    "version": "0.1.0",
+    "environment": "prod",
+    "listen": {
+      "port": 9080
+    },
+    "process": {
+      "workers": 4,
+      "gracefulShutdownSeconds": 3
+    },
+    "timeouts": {
+      "readHeaderMs": 10,
+      "readBodyMs": 10,
+      "writeResponseMs": 5000,
+      "handlerMaxMs": 5000
+    },
+    "limits": {
+      "maxRequestLineBytes": 2048,
+      "maxHeaderCount": 40,
+      "maxHeaderBytes": 8192,
+      "maxBodyBytes": 512
+    },
+    "http": {
+      "keepAlive": false,
+      "supportChunkedRequest": false,
+      "defaultResponseHeaders": {
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "no-referrer",
+        "Cache-Control": "no-store",
+        "Content-Security-Policy": "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self'; font-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+      }
+    },
+    "templateDir": "templates",
+    "static": {
+      "enabled": 1,
+      "mount": "/public",
+      "root": "public",
+      "dirListing": {
+        "enabled": 0
+      }
+    },
+    "rate": {
+      "enabled": 1,
+      "rps": 2,
+      "burst": 8
+    },
+    "metrics": {
+      "enabled": 0
+    },
+    "errors": {
+      "enabled": 0
+    },
+    "keepAlive": {
+      "enabled": 0
+    }
+  },
+  "logging": {
+    "accessLogEnabled": false,
+    "auditLogEnabled": false,
+    "redaction": {
+      "redactHeaders": [
+        "authorization",
+        "cookie",
+        "set-cookie",
+        "x-api-key"
+      ],
+      "redactQueryString": true,
+      "redactBody": true
+    }
+  },
+  "auth": {
+    "enabled": 0
+  },
+  "examples": {
+    "enabled": 0
+  },
+  "templates": {
+    "precompileEnabled": true,
+    "devWatchEnabled": false,
+    "maxRenderDepth": 12
+  },
+  "mioos": {
+    "enabled": 0,
+    "terminal": {
+      "enabled": 0
+    }
+  },
+  "websocket": {
+    "idleTimeoutSeconds": 10,
+    "maxFrameBytes": 512,
+    "maxMessageBytes": 512
+  }
+}

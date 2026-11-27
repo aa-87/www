@@ -1,0 +1,5 @@
+public/www/xterm.js
+public/www/xterm.css
+*.o
+*.dat
+*.gld
