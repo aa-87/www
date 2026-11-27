@@ -1,0 +1,21 @@
+# Threat model and launch gates
+
+This public site has no user accounts or application-level credential storage. The terminal is a fixed-operation dispatcher; it cannot run supplied M expressions, global references, paths, commands, routine names, or shell text. Submitted text is data only, not interpreted. ASCII only, at most 256 bytes. Do not send secrets. MIOSHA256 may initialize internal lookup-table globals; the database must be dedicated to this service. No claims of statelessness or zero infrastructure logging.
+
+## Production boundary
+
+- Use a dedicated unprivileged service identity, separate database/GLD, object directory, and read-only application sources/assets. No SSH keys, cloud credentials, production database mount or access, Docker socket or writable code. No outbound network unless explicitly required.
+- The inspected MIOSOCK listener binds by TCP port, not the configured host. Enforce firewall or private network namespace so only the reverse proxy can reach 9080; verify externally. Do not treat the config host as a security control.
+- Use nginx example with a valid certificate, strict TLS, exact allowed routes, request and connection limits. Do not rely on the upstream workers configuration as a hard process quota: enforce systemd TasksMax, memory/CPU limits, and verify active process limits. Upstream rate limiter may see the proxy as a single peer: nginx enforces per-client limits; test for aggregate starvation and tune accordingly.
+- Keep default MIOOS, registry, metrics, debugging, auth management and arbitrary WebSocket endpoints unregistered. Do not call the default upstream MIO entry point. No broad static mount; exact assets only, no directory indexes. Confirm there are no symlinks in the public asset directory. CSP allows inline styles for xterm rendering, but no inline scripts or external origins. Validate actual headers at the edge. No cookies and no analytics; theme only in browser localStorage. Review system/proxy/error logs separately, minimize retention and never capture lab bodies.
+- Check all responses for stack traces or internal data; upstream runtime error paths need testing. CORS is not a security boundary. Origin check rejects browser cross-origin POSTs but a non-browser caller can forge it; resource quotas and fixed commands are the boundary.
+
+## Before release
+
+Run native tests in fresh disposable databases (including UTF-8 and M mode as applicable), SSR smoke tests, known SHA vectors, request body type and length tests, forged/missing origin tests, traversal and encoded-path tests, unknown-method checks, rate-limit and parallel-request tests, mobile keyboard/accessibility checks, CSP with xterm and fallback, and proxy firewall verification. Inspect upstream route compilation and actual limits with the exact deployed revision. Ensure runtime failures return generic errors. Test with the upstream MIO test suite.
+
+## Future real terminal
+
+A real anonymous M prompt is arbitrary code execution by design. Never expose MIOOSPIPE's default yottadb -direct process against the host. A separate worker/broker must provision one disposable sandbox per guest (prefer a microVM or equivalent hardened isolation), no shared writable volume or network, separate temporary database and scratch filesystem, fixed read-only runtime, no secrets, unprivileged process, enforced CPU/memory/PID/output/storage/time quotas, exact Origin checks at upgrade, unpredictable session capability bound to ownership, bounded input and WebSocket frames, global and per-client concurrency caps, absolute/idle timeout, disconnect cleanup and orphan reaping. Verify escape attempts and cross-session isolation before enabling. A guest token is not a login. No blacklist of M commands can substitute for the boundary. Reuse MIOOS xterm and WebSocket message conventions only after reviewing them; adapt the pipe backend to a fixed sandbox broker instead of the host direct command.
+
+TK-POP needs terminal behavior, routine/dependency and licensing review before running; its first release is a documented showcase rather than remote execution. Server features such as WebSocket, auth, VFS, admin and metrics are intentionally not all publicly enabled. Demonstrate them with isolated or documented examples rather than expanding the public attack surface.
